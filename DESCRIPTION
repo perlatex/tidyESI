@@ -1,0 +1,28 @@
+Package: tidyESI
+Title: A package to tidy ESI data
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Minjie",
+           family = "Wang",
+           role = c("aut", "cre"),
+           email = "wangminjiede@gmail.com",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: tidy ESI (Essential Science Indicators) data
+License: CC0
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.0
+Imports: 
+    glue,
+    dplyr,
+    rlang,
+    here,
+    janitor,
+    purrr,
+    fs,
+    stringr,
+    tibble,
+    readxl
+Suggests: 
+    testthat
