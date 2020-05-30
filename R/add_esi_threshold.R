@@ -14,7 +14,6 @@
 add_esi_threshold <- function(df, discipline, date = "last") {
   library(dplyr)
   library(rlang)
-  #load(here::here("rawdata", "Threshold.Rdata"))
 
   join_var <- as_name(enquo(discipline))
 
@@ -33,6 +32,20 @@ add_esi_threshold <- function(df, discipline, date = "last") {
       glue::glue("Wrong date type: only 'last', 'all' and {colnames(Threshold_raw)[-1]} are supported")
     )
   }
+
+
+  notwithin <- df %>%
+    mutate(
+      is_within_discipline = if_else({{discipline}} %in% Threshold_subset[[join_var]], TRUE, FALSE)
+    ) %>%
+    summarise(num = sum(!is_within_discipline)) %>%
+    pull(num)
+
+  message(
+    glue::glue("there are {notwithin} row have no alternative.")
+  )
+
+
 
   df %>%
     dplyr::left_join(Threshold_subset, by = setNames(join_var, join_var))
