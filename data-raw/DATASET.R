@@ -56,7 +56,18 @@ usethis::use_data(Threshold_raw, overwrite = TRUE)
 
 
 esi_jcr_list <- readxl::read_excel(
-  here::here("data-raw", "raw_esi_jcr_list", "esi-master-journal-list-5-2020.xlsx") 
+  here::here("data-raw", "raw_esi_jcr_list", "esi-master-journal-list-5-2020.xlsx")
 )
 usethis::use_data(esi_jcr_list, overwrite = TRUE)
+
+
+
+raw_sicnu_collname <- readxl::read_excel(
+  here::here("data-raw", "raw_college_name", "sicnu_coll_name_en2cn.xlsx")
+)
+usethis::use_data(raw_sicnu_collname, overwrite = TRUE)
+
+
+
+
 

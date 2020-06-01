@@ -2,4 +2,6 @@
 
 export(add_discipline_cn)
 export(add_esi_threshold)
+export(add_univ_name_cn)
+export(map_addr_to_college_name)
 export(map_issn_to_esi_discipline)

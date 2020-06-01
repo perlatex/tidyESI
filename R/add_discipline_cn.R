@@ -55,7 +55,11 @@ add_discipline_cn <- function(df, var) {
 
 
   df %>% mutate(
-    "{{var}}_cn" := dplyr::recode({{var}}, !!!vector_key)
+    "{{var}}_cn" := dplyr::recode(
+        stringr::str_to_title( {{var}} ),
+        !!!vector_key,
+        .default = NA_character_
+        )
   )
 }
 
