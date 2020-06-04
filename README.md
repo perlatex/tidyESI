@@ -36,3 +36,8 @@ dt %>% add_esi_threshold(x, date = c("20200326"))
 dt %>% add_esi_threshold(x, date = c("20200326", "20200514"))
 ```
 
+``` r
+dt %>% add_high_cited(x, scope = "last year")
+dt %>% add_high_cited(x, scope = "each year")
+dt %>% add_high_cited(x, scope = "all year")
+```

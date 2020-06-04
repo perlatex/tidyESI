@@ -69,5 +69,16 @@ usethis::use_data(raw_sicnu_collname, overwrite = TRUE)
 
 
 
-
-
+raw_highcited_timeserial <-
+  here::here("data-raw", "raw_highlypaper", "20200514.xlsx") %>%
+  readxl::read_excel(., skip = 1) %>%
+  janitor::clean_names() %>%
+  dplyr::filter(stringr::str_detect(accession_number, "^WOS")) %>%
+  dplyr::mutate(discipline = stringr::str_to_title(research_field)) %>%
+  dplyr::mutate(times_cited = as.numeric(times_cited)) %>%
+  dplyr::select(
+    discipline,
+    year = publication_date,
+    times_cited
+  )
+usethis::use_data(raw_highcited_timeserial, overwrite = TRUE)
