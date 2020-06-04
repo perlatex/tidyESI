@@ -48,11 +48,22 @@ esi_discipline %>% add_high_cited(discipline, scope = "last year")
 esi_discipline %>% add_high_cited(discipline, scope = "all year")
 ```
 
+
+``` r
+df <- tibble(
+        x = c("Chemistry")
+       )
+
+df %>% 
+   add_high_cited(x, scope = "each year")
+```
+
+
 ``` r
 df <- tibble(
         x = c("Chemistry"), 
         year = c(2010:2020)
-             )
+      )
 
 df %>% 
    mutate(year = as.character(year)) %>% 

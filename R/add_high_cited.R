@@ -29,7 +29,8 @@ add_high_cited <- function(df,
         n_cited_high = sum(times_cited),
         .groups = "drop"
       ) %>%
-      filter(year == max(year))
+      filter(year == max(year)) %>%
+      select(-year)
   } else if (scope == "each year") {
     subset <- raw_highcited_timeserial %>%
       dplyr::group_by(discipline, year) %>%
@@ -55,7 +56,7 @@ add_high_cited <- function(df,
   subset <- subset %>%
     dplyr::select(!!join_var := discipline, everything())
 
-  if (scope == "each year") {
+  if (scope == "each year" & "year" %in% colnames(df)) {
       df %>%
         dplyr::left_join(subset, by = c({{join_var}}, "year"))
   } else {
