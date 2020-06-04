@@ -34,13 +34,27 @@ dt %>% add_esi_threshold(x, date = "all")
 dt %>% add_esi_threshold(x, date = "ALL")
 dt %>% add_esi_threshold(x, date = c("20200326"))
 dt %>% add_esi_threshold(x, date = c("20200326", "20200514"))
-```
 
-``` r
 esi_discipline %>% add_esi_threshold(discipline, date = "last")
 esi_discipline %>% add_esi_threshold(discipline, date = "all")
+```
+
+
+``` r
+dt %>% add_high_cited(x, scope = "last year")
+dt %>% add_high_cited(x, scope = "all year")
 
 esi_discipline %>% add_high_cited(discipline, scope = "last year")
 esi_discipline %>% add_high_cited(discipline, scope = "all year")
-esi_discipline %>% add_high_cited(discipline, scope = "each year")
+```
+
+``` r
+df <- tibble(
+        x = c("Chemistry"), 
+        year = c(2010:2020)
+             )
+
+df %>% 
+   mutate(year = as.character(year)) %>% 
+   add_high_cited(x, scope = "each year")
 ```

@@ -55,6 +55,12 @@ add_high_cited <- function(df,
   subset <- subset %>%
     dplyr::select(!!join_var := discipline, everything())
 
-  df %>%
-    dplyr::left_join(subset, by = setNames(join_var, join_var))
+  if (scope == "each year") {
+      df %>%
+        dplyr::left_join(subset, by = c({{join_var}}, "year"))
+  } else {
+      df %>%
+        dplyr::left_join(subset, by = {{join_var}})
+  }
+
 }
