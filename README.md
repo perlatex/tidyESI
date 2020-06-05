@@ -23,7 +23,7 @@ library(tidyESI)
 esi_discipline
 ```
 
-
+### add_esi_threshold
 ``` r
 library(tidyverse)
 
@@ -34,18 +34,38 @@ dt %>% add_esi_threshold(x, date = "all")
 dt %>% add_esi_threshold(x, date = "ALL")
 dt %>% add_esi_threshold(x, date = c("20200326"))
 dt %>% add_esi_threshold(x, date = c("20200326", "20200514"))
-
-esi_discipline %>% add_esi_threshold(discipline, date = "last")
-esi_discipline %>% add_esi_threshold(discipline, date = "all")
 ```
 
 
 ``` r
-dt %>% add_high_cited(x, scope = "last year")
-dt %>% add_high_cited(x, scope = "all year")
+esi_discipline %>% add_esi_threshold(discipline, date = "last")
+esi_discipline %>% add_esi_threshold(discipline, date = "all")
+```
 
-esi_discipline %>% add_high_cited(discipline, scope = "last year")
-esi_discipline %>% add_high_cited(discipline, scope = "all year")
+### add_high_cited
+``` r
+sicnu <- read_highcited(here::here("data", "highly20200514.xlsx"))
+sicnu
+```
+
+
+
+
+``` r
+dt %>% add_high_cited(x, source = sicnu, scope = "last year")
+dt %>% add_high_cited(x, source = sicnu, scope = "all year")
+
+esi_discipline %>% 
+     add_high_cited(discipline, 
+                    source = sicnu, 
+                    scope = "last year"
+                    )
+                    
+esi_discipline %>% 
+    add_high_cited(discipline, 
+                   source = sicnu, 
+                   scope = "all year"
+                   )
 ```
 
 
@@ -55,7 +75,7 @@ df <- tibble(
        )
 
 df %>% 
-   add_high_cited(x, scope = "each year")
+   add_high_cited(x, source = sicnu, scope = "each year")
 ```
 
 
@@ -67,5 +87,5 @@ df <- tibble(
 
 df %>% 
    mutate(year = as.character(year)) %>% 
-   add_high_cited(x, scope = "each year")
+   add_high_cited(x, source = sicnu, scope = "each year")
 ```

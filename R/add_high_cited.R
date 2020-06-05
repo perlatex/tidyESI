@@ -1,25 +1,31 @@
 #' @title add high-cited information for ESI discipline
 #'
-#' @param df   data.frame, but only support dataset about `Sichuan Normal University` now.
+#' @param df  data.frame
 #' @param discipline  a column belong to the character vector of 22 ESI disciplines
+#' @param source  a data.frame imported by `read_highcited()`
 #' @param scope   can be one of `last year`, `all year` and `each year`
 #'
 #' @return data.frame that adds some new column about high-cited information for the specified discipline.
 #' @export
 #'
 #' @examples
-#' df %>% add_high_cited(x, scope = "last year")
-#' df %>% add_high_cited(x, scope = "each year")
-#' df %>% add_high_cited(x, scope = "all year")
+#' df %>% add_high_cited(x, source = hc, scope = "last year")
+#' df %>% add_high_cited(x, source = hc, scope = "each year")
+#' df %>% add_high_cited(x, source = hc, scope = "all year")
 add_high_cited <- function(df,
                            discipline,
-                           univ = "Sichuan Normal University", # not used now
+                           source = NULL,
                            scope = "each year") {
   library(dplyr)
   library(rlang)
 
-  join_var <- as_name(enquo(discipline))
+  if(!is.data.frame(source))
+    stop("Wrong Arguments 'source', please specify a data.frame imported by `read_highcited()`")
 
+
+
+  join_var <- as_name(enquo(discipline))
+  raw_highcited_timeserial <- source
 
   if (scope == "last year") {
     subset <- raw_highcited_timeserial %>%
