@@ -4,17 +4,14 @@
 \alias{add_high_cited}
 \title{add high-cited information for ESI discipline}
 \usage{
-add_high_cited(
-  df,
-  discipline,
-  univ = "Sichuan Normal University",
-  scope = "each year"
-)
+add_high_cited(df, discipline, source = NULL, scope = "each year")
 }
 \arguments{
-\item{df}{data.frame, but only support dataset about \verb{Sichuan Normal University} now.}
+\item{df}{data.frame}
 
 \item{discipline}{a column belong to the character vector of 22 ESI disciplines}
+
+\item{source}{a data.frame imported by \code{read_highcited()}}
 
 \item{scope}{can be one of \verb{last year}, \verb{all year} and \verb{each year}}
 }
@@ -25,7 +22,7 @@ data.frame that adds some new column about high-cited information for the specif
 add high-cited information for ESI discipline
 }
 \examples{
-df \%>\% add_high_cited(x, scope = "last year")
-df \%>\% add_high_cited(x, scope = "each year")
-df \%>\% add_high_cited(x, scope = "all year")
+df \%>\% add_high_cited(x, source = hc, scope = "last year")
+df \%>\% add_high_cited(x, source = hc, scope = "each year")
+df \%>\% add_high_cited(x, source = hc, scope = "all year")
 }
