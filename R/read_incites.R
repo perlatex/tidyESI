@@ -1,22 +1,43 @@
-#' @title read incites file
+#' @title read incites files
 #'
-#' @param flnm file name, only only support `csv` file format
+#' @param ... file name (named by organization name), now only support `csv` file format
 #'
-#' @return data.frame including four columns (discipline, year, n_paper, n_cited)
+#' @return data.frame including five columns (univ, discipline, year, n_paper, n_cited)
 #' @export
 #'
 #' @examples
 #' df <- read_incites("filename.csv")
+#' or
+#' here::here("data") %>%
+#'   fs::dir_ls(regexp = "\\.csv$") %>%
+#'   read_incites()
 #'
-read_incites <- function(flnm) {
-  readr::read_csv(flnm) %>%
-    dplyr::select(
-      discipline = "名称",
-      year = "出版年",
-      n_paper = "Web of Science 论文数",
-      n_cited = "被引频次"
-    ) %>%
-    dplyr::filter(!is.na(year)) %>%
-    dplyr::mutate(year = as.character(year)) %>%
-    dplyr::mutate(discipline = stringr::str_to_title(discipline))
+#'
+read_incites <- function(...) {
+  arguments <- unlist(list(...))
+  k <- length(arguments)
+  D <- list()
+
+  for (i in 1:k) {
+    D[[i]] <-
+      readr::read_csv(arguments[i]) %>%
+      dplyr::select(
+        discipline = "名称",
+        year = "出版年",
+        n_paper = "Web of Science 论文数",
+        n_cited = "被引频次"
+      ) %>%
+      dplyr::filter(!is.na(year)) %>%
+      dplyr::mutate(year = as.character(year)) %>%
+      dplyr::mutate(discipline = stringr::str_to_title(discipline)) %>%
+      dplyr::mutate(
+        univ = stringr::str_split(arguments[i], "/") %>%
+          unlist() %>%
+          dplyr::last() %>%
+          stringr::str_extract(., ".*?(?=\\.)")
+      ) %>%
+      dplyr::relocate(univ)
+  }
+
+  purrr::map_dfr(D, bind_rows)
 }

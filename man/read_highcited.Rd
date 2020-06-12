@@ -2,20 +2,24 @@
 % Please edit documentation in R/read_highcited.R
 \name{read_highcited}
 \alias{read_highcited}
-\title{read highcited file}
+\title{read highcited files}
 \usage{
-read_highcited(flnm)
+read_highcited(...)
 }
 \arguments{
-\item{flnm}{file name, only only support \code{xlsx} file format}
+\item{...}{file name (named by organization name), now only support \code{xlsx} file format}
 }
 \value{
-data.frame including four columns (discipline, year, n_paper, n_cited)
+data.frame including five columns (univ, discipline, year, n_paper, n_cited)
 }
 \description{
-read highcited file
+read highcited files
 }
 \examples{
 hc <- read_highcited("filename.xlsx")
+or
+here::here("data") \%>\%
+  fs::dir_ls(regexp = "\\\\.xlsx$") \%>\%
+  read_highcited()
 
 }

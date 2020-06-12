@@ -2,20 +2,25 @@
 % Please edit documentation in R/read_incites.R
 \name{read_incites}
 \alias{read_incites}
-\title{read incites file}
+\title{read incites files}
 \usage{
-read_incites(flnm)
+read_incites(...)
 }
 \arguments{
-\item{flnm}{file name, only only support \code{csv} file format}
+\item{...}{file name (named by organization name), now only support \code{csv} file format}
 }
 \value{
-data.frame including four columns (discipline, year, n_paper, n_cited)
+data.frame including five columns (univ, discipline, year, n_paper, n_cited)
 }
 \description{
-read incites file
+read incites files
 }
 \examples{
 df <- read_incites("filename.csv")
+or
+here::here("data") \%>\%
+  fs::dir_ls(regexp = "\\\\.csv$") \%>\%
+  read_incites()
+
 
 }
