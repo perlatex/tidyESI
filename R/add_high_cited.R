@@ -29,7 +29,7 @@ add_high_cited <- function(df,
 
   if (scope == "last year") {
     subset <- raw_highcited_timeserial %>%
-      dplyr::group_by(discipline, year) %>%
+      dplyr::group_by(univ, discipline, year) %>%
       dplyr::summarise(
         n_paper_high = n(),
         n_cited_high = sum(times_cited),
@@ -39,7 +39,7 @@ add_high_cited <- function(df,
       select(-year)
   } else if (scope == "each year") {
     subset <- raw_highcited_timeserial %>%
-      dplyr::group_by(discipline, year) %>%
+      dplyr::group_by(univ, discipline, year) %>%
       dplyr::summarise(
         n_paper_high = n(),
         n_cited_high = sum(times_cited),
@@ -47,7 +47,7 @@ add_high_cited <- function(df,
       )
   } else if (scope == "all year") {
     subset <- raw_highcited_timeserial %>%
-      dplyr::group_by(discipline) %>%
+      dplyr::group_by(univ, discipline) %>%
       dplyr::summarise(
         n_paper_high = n(),
         n_cited_high = sum(times_cited),
@@ -60,7 +60,7 @@ add_high_cited <- function(df,
   }
 
   subset <- subset %>%
-    dplyr::select(!!join_var := discipline, everything())
+    dplyr::select(univ, !!join_var := discipline, everything())
 
   if (scope == "each year" & "year" %in% colnames(df)) {
       df %>%
