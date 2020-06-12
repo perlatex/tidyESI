@@ -19,7 +19,7 @@ read_highcited <- function(...) {
 
   for (i in 1:k) {
     D[[i]] <-
-      readxl::read_excel(arguments[i], skip = 1) %>%
+      readxl::read_excel(arguments[i], skip = 5) %>%
       janitor::clean_names() %>%
       dplyr::filter(stringr::str_detect(accession_number, "^WOS")) %>%
       dplyr::mutate(discipline = stringr::str_to_title(research_field)) %>%
