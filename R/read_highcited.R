@@ -29,7 +29,8 @@ read_highcited <- function(...) {
         univ = stringr::str_split(arguments[i], "/") %>%
           unlist() %>%
           dplyr::last() %>%
-          stringr::str_extract(., ".*?(?=\\.)")
+          stringr::str_extract(., ".*?(?=\\.)") %>%
+          stringr::str_to_title()
       ) %>%
       dplyr::relocate(univ)
   }

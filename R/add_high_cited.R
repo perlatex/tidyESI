@@ -25,7 +25,8 @@ add_high_cited <- function(df,
 
 
   join_var <- as_name(enquo(discipline))
-  raw_highcited_timeserial <- source
+  raw_highcited_timeserial <- source %>%
+    dplyr::mutate(univ = stringr::str_to_title(univ))
 
   if (scope == "last year") {
     subset <- raw_highcited_timeserial %>%
