@@ -1,7 +1,7 @@
 #' @title add high-cited information for ESI discipline
 #'
 #' @param df  data.frame
-#' @param discipline  a column belong to the character vector of 22 ESI disciplines
+#' @param discipline  a column containing the character vector of 22 ESI disciplines
 #' @param source  a data.frame imported by `read_highcited()`
 #' @param scope   can be one of `last year`, `all year` and `each year`
 #'

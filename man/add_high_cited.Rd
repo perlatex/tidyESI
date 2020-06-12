@@ -9,7 +9,7 @@ add_high_cited(df, discipline, source = NULL, scope = "each year")
 \arguments{
 \item{df}{data.frame}
 
-\item{discipline}{a column belong to the character vector of 22 ESI disciplines}
+\item{discipline}{a column containing the character vector of 22 ESI disciplines}
 
 \item{source}{a data.frame imported by \code{read_highcited()}}
 
