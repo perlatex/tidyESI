@@ -64,10 +64,10 @@ add_high_cited <- function(df,
 
   if (scope == "each year" & "year" %in% colnames(df)) {
       df %>%
-        dplyr::left_join(subset, by = c({{join_var}}, "year"))
+        dplyr::left_join(subset, by = c("univ", {{join_var}}, "year"))
   } else {
       df %>%
-        dplyr::left_join(subset, by = {{join_var}})
+        dplyr::left_join(subset, by = c("univ", {{join_var}}))
   }
 
 }
