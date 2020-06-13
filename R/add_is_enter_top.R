@@ -29,6 +29,7 @@ add_is_enter_top <- function(df,
   univ_var <- as_name(enquo(univ))
   disc_var <- as_name(enquo(discipline))
 
+  raw_top_one_percent <- source
 
   if (isTRUE(.keep)) {
     subset <- raw_top_one_percent %>%
