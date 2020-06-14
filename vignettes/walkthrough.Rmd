@@ -1,0 +1,349 @@
+---
+title: "师范类大学学科分析报告"
+author: "XX图书馆"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    latex_engine: xelatex
+    extra_dependencies:
+      ctex: UTF8
+    number_sections: yes
+    toc: yes
+classoptions: "hyperref, 12pt, a4paper"
+---
+
+
+```{r setup, include=FALSE}
+set.seed(1024)
+
+knitr::opts_chunk$set(
+  comment = "#>",
+  collapse = TRUE,
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  out.width = "100%",
+  fig.align = "center",
+  fig.pos = "H",
+  #fig.asp = 0.618, # 1 / phi
+  fig.show = "hold",
+  fig.showtext = TRUE
+)
+```
+
+
+```{r, results='hide'}
+library(tidyESI) # devtools::install_github("perlatex/tidyESI")
+library(tidyverse)
+library(scales)
+library(here)
+library(fs)
+library(knitr)
+library(kableExtra)
+library(showtext)
+showtext_auto()
+
+options(knitr.kable.NA = '')
+```
+
+# 导读
+
+这是关于我国师范类大学的学科分析报告，巴拉巴拉，
+
+
+## 统计口径
+
+- 统计对象：师范类大学 
+- 统计周期：最近十年（比如：2010年全年 - 2020年）
+- 技术指标：ESI说了算
+
+
+
+# 各校发展态势
+
+
+```{r}
+# 读取incites数据
+dt <- here::here("data_incites_normal_univ") %>%
+  fs::dir_ls(regexp = "\\.csv$") %>%
+  read_incites()
+
+
+# 读取高被引论文清单
+hc <- here::here("data_highcited_normal_univ") %>%
+  fs::dir_ls(regexp = "\\.xlsx$") %>%
+  tidyESI::read_highcited()
+
+# 读取进入ESI前百分之一学科的机构清单
+top <- here::here("data_isEnter_normal_univ") %>%
+  fs::dir_ls(regexp = "\\.xlsx$") %>%
+  tidyESI::read_top_one_percent()
+```
+
+
+## 科研产出
+
+```{r}
+dt %>% 
+  dplyr::group_by(univ) %>% 
+  dplyr::summarise(
+    across(starts_with("n_"), sum)
+  ) %>% 
+  tidyESI::add_univ_name_cn(univ) %>%
+  dplyr::select(univ_cn, starts_with("n_")) %>% 
+  
+  head(10) %>%  
+  knitr::kable(
+     caption = "我校各学科发展情况",
+     booktabs = TRUE
+  ) %>%
+  kableExtra::kable_styling(latex_options = "hold_position") 
+```
+
+
+
+```{r}
+dt %>% 
+  dplyr::group_by(univ) %>% 
+  dplyr::summarise(
+    across(starts_with("n_"), sum)
+  ) %>% 
+  tidyESI::add_univ_name_cn(univ) %>% 
+  
+  ggplot(aes(x = n_paper, y = reorder(univ_cn, n_paper))) +
+  geom_col(fill = "#bc5090") +
+  labs(x=NULL, y =NULL, 
+       title = "师范类高校科研产出",
+       subtitle = '（数据来源 ESI）') 
+```
+
+
+## 学科发展
+
+```{r}
+univ_discip_timeserial_2010_to_2019 <- dt %>% 
+  dplyr::filter(between(year, 2010, 2019))  %>% 
+  tidyESI::add_univ_name_cn(univ) %>% 
+  tidyESI::add_discipline_cn(discipline)
+```
+
+
+```{r}
+focus_discipline_cn <- c("工程学", "物理学", "数学", "化学", 
+						 "材料科学", "计算机科学", "经济与商业", "社会科学总论")
+d <- univ_discip_timeserial_2010_to_2019 %>% 
+	dplyr::filter(	discipline_cn %in% focus_discipline_cn) 
+#d
+```
+
+
+
+
+
+```{r}
+highlight_school <- c("北京师范大学", "四川师范大学")
+d1 <- d %>%
+  dplyr::group_by(univ_cn) %>%
+  dplyr::mutate(
+    end_label = ifelse(year == max(year), univ_cn, NA_character_)
+  ) %>%
+  dplyr::mutate(
+    end_label = case_when(
+      univ_cn %in% highlight_school ~ end_label,
+      TRUE ~ NA_character_
+    ),
+    color_group = case_when(
+      univ_cn %in% highlight_school ~ univ_cn,
+      TRUE ~ "ZZOTHER"
+    )
+  ) %>%
+  dplyr::ungroup()
+#d1
+```
+
+
+
+
+```{r, fig.height = 10, fig.width = 6}
+d1 %>% 
+	dplyr::mutate(univ_cn = factor(univ_cn) %>% 
+		   	       forcats::fct_relevel("北京师范大学", "四川师范大学", after = Inf)
+		   ) %>% 
+	dplyr::mutate(year = as.numeric(year) ) %>%
+
+  ggplot(aes(
+    x = year, y = n_paper,
+    color = color_group, label = end_label,
+    group = univ_cn
+  )) +
+  geom_line(size = 0.8) +
+  geom_point(data = . %>% dplyr::filter(!is.na(end_label)),
+  		   aes(fill = end_label),
+  		   shape = 21, size = 2,
+  		   color = "white") +
+  ggrepel::geom_text_repel(
+    nudge_x = 1.1,
+    nudge_y = 0.1,
+    segment.color = NA
+  ) +
+  scale_color_manual(
+  	values = c("北京师范大学" = "#195F90FF",
+  			       "四川师范大学" = "#D76500FF",
+  			       "ZZOTHER" = "gray80")
+  	) +
+  scale_fill_manual(
+  	values = c("北京师范大学" = "#195F90FF",
+  			       "四川师范大学" = "#D76500FF",
+  			       "ZZOTHER" = "gray80")
+  	) +
+  guides(color = FALSE) +
+  facet_wrap(vars(discipline_cn), scales = "free", ncol = 2) +
+  theme(legend.position = "none") +
+  scale_x_continuous(breaks = c(seq(2000, 2019, by = 4), 2019) ) +
+  labs(
+    x = NULL, y = NULL,
+    title = "我国师范类高校科研论文的产出情况"
+  )
+```
+
+
+## 学科发展态势
+
+
+```{r}
+univ_discip_cum_last_ten_year <- dt %>% 
+  dplyr::filter(between(year, 2010, 2020)) %>% # last ten year
+	dplyr::group_by(univ, discipline) %>%
+	dplyr::summarise(
+		cum_paper = sum(n_paper),
+		cum_cited = sum(n_cited)
+	) %>%
+	dplyr::ungroup() %>% 
+	tidyESI::add_is_enter_top(univ, discipline, source = top) %>% 
+	tidyESI::add_esi_threshold(discipline, date = "last") %>% 
+	tidyESI::add_discipline_cn(discipline) %>% 
+	tidyESI::add_univ_name_cn(univ)
+
+#univ_discip_cum_last_ten_year
+```
+
+```{r}
+focus_discipline <- c("工程学")
+label_school <- c("四川师范大学", "北京师范大学", "南京师范大学", 
+				  "杭州师范大学", "华南师范大学", "陕西师范大学")
+univ_discip_cum_last_ten_year %>% 
+	dplyr::filter(discipline_cn %in% focus_discipline) %>% 
+	dplyr::mutate(
+    label = dplyr::if_else(univ_cn %in% label_school, univ_cn, "")
+  ) %>%
+	
+  ggplot(aes(x = cum_paper, y = cum_cited, fill = is_enter_top_one_percent)) +
+  geom_point(
+    size = 3.5,
+    alpha = .9,
+    shape = 21,
+    col = "white"#,
+    #fill = "#0162B2"
+  ) +
+  ggrepel::geom_text_repel(
+    aes(label = label),
+    size = 4.5,
+    point.padding = .2,
+    box.padding = .3,
+    force = 1,
+    min.segment.length = 0
+  ) +
+ geom_hline(aes(yintercept = `20200514`)) +
+ annotate("text", x = 1250, y = 3400, 
+			 label = "进入ESI前1%学科阈值线", size = 4, color = "red") +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    panel.grid.minor = element_blank()
+  ) +
+  labs(
+  	title = "师范类院校工程学科进入前1%ESI学科",
+	subtitle = "ESI数据库2020年05月14日数据",
+    x = "累积发文量(2010-2020)",
+    y = "累积引文量(2010-2020)"
+  )
+	
+```
+
+
+## 进入ESI前百分之一学科
+```{r}
+dt1 <- dt %>% 
+  dplyr::group_by(univ, discipline) %>% 
+  dplyr::summarise(
+    across(starts_with("n_"), sum)
+  ) %>% 
+  dplyr::ungroup() %>% 
+  tidyESI::add_is_enter_top(univ, discipline, source = top) %>% 
+  tidyESI::add_esi_threshold(discipline = discipline, date = "last") %>% 
+  tidyESI::add_univ_name_cn(univ) %>% 
+  tidyESI::add_discipline_cn(discipline)
+#dt1
+```
+
+
+```{r, fig.asp=0.8, results="asis"}
+dt1 %>% 
+	dplyr::group_by(univ_cn) %>% 
+	dplyr::mutate(univ_occur_num = sum(!is.na(is_enter_top_one_percent))) %>% 
+	dplyr::ungroup() %>% 
+	dplyr::group_by(discipline_cn) %>% 
+	dplyr::mutate(discip_occur_num = sum(!is.na(is_enter_top_one_percent))) %>% 
+	dplyr::ungroup() %>%
+  dplyr::mutate(univ_cn = glue::glue("{univ_cn}({univ_occur_num})") ) %>% 
+	dplyr::select(discipline_cn, univ_cn, is_enter_top_one_percent,
+		            discip_occur_num, univ_occur_num) %>% 
+  
+  
+	ggplot(aes(x = fct_reorder2(discipline_cn, univ_occur_num, discip_occur_num), 
+			   y = fct_reorder2(univ_cn, discip_occur_num, univ_occur_num))
+		   ) +
+	geom_point(color = "gray75") +
+	geom_point(data = . %>% filter(!is.na(is_enter_top_one_percent)),
+			   color = "red",
+			   size = 3,
+			   stroke = 1.2
+			   ) +
+	theme(legend.position = "none",
+	      axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1)) +
+	labs(x = NULL, y = NULL,
+         title = "Top30师范大学进入1%ESI学科情况", 
+    	  subtitle = 'ESI数据库2020年05月14日数据'
+    	) 
+```
+
+## 高被引论文 
+
+```{r}
+dt  %>% 
+  dplyr::filter(between(year, 2010, 2020)) %>% 
+  dplyr::group_by(univ, discipline) %>% 
+  dplyr::summarise(
+    across(starts_with("n_"), sum, na.rm = T)
+  ) %>% 
+  dplyr::ungroup() %>% 
+  tidyESI::add_high_cited(discipline, 
+                   source = hc, 
+                   scope = "all year"
+                   ) %>% 
+  tidyESI::add_esi_threshold(discipline = discipline, date = "last") %>% 
+  tidyESI::add_univ_name_cn(univ) %>% 
+  tidyESI::add_discipline_cn(discipline) %>% 
+  
+  dplyr::mutate(prop = round(n_cited_high/n_cited, 3)) %>% 
+  dplyr::arrange(desc(prop)) %>% 
+  dplyr::select(univ_cn, discipline_cn, n_cited, n_cited_high, prop) %>% 
+  head(10) %>%  
+  
+  knitr::kable(
+     caption = "靠高被引撑起的学科",
+     booktabs = TRUE
+  ) %>%
+  kableExtra::kable_styling(latex_options = "hold_position") 
+```
+
