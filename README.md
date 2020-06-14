@@ -13,6 +13,9 @@ You can install the development version of `tidyESI` with:
 ``` r
 devtools::install_github("perlatex/tidyESI")
 ```
+## How to use
+
+[There](https://github.com/perlatex/tidyESI/tree/master/vignettes) are manuals and documents here, but only Chinese at present.
 
 ## Example
 
