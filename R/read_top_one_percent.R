@@ -34,10 +34,11 @@ read_top_one_percent <- function(...) {
       ) %>%
       dplyr::select(
         univ, discipline,
-        web_of_science_documents,
-        cites, top_papers, is_enter_top_one_percent
+        n_paper_eff = web_of_science_documents,
+        n_cited_eff = cites,
+        top_papers, is_enter_top_one_percent
       )
-    
+
   }
 
   purrr::map_dfr(D, bind_rows)
