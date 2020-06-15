@@ -3,8 +3,7 @@
 
 <!-- badges: start -->
 <!-- badges: end -->
-
-The goal of `tidyESI` is to make discipline statistics more easy and more tidyverse.
+ESI[(Essential Science Indicators)](https://esi.clarivate.com/) is widely used in the evaluation of scientific research competitiveness. The goal of `tidyESI` is to make discipline statistics more easy and more tidyverse.
 
 ## Installation
 
