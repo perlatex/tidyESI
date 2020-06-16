@@ -51,35 +51,44 @@ options(knitr.kable.NA = '')
 这是关于我国师范类大学的学科分析报告，巴拉巴拉，
 
 
+
 ## 统计口径
 
 - 统计对象：师范类大学 
-- 统计周期：最近十年（比如：2010年全年 - 2020年）
+- 统计周期：与当前ESI阈值计算所覆盖的时间一致（比如：2010年全年 - 2020年）
 - 技术指标：ESI说了算
+- 命名规则：与检索词一致。不同的数据库来源，分别用不同的文件夹保存
 
 
+```{r echo=FALSE}
+here::here("vignettes", "data_incites_normal_univ") %>%
+  fs::dir_ls(regexp = "\\.csv$") %>% 
+  basename()
+```
 
-# 各校发展态势
+# 读取数据
 
 
 ```{r}
 # 读取incites数据
-dt <- here::here("data_incites_normal_univ") %>%
+dt <- here::here("vignettes", "data_incites_normal_univ") %>%
   fs::dir_ls(regexp = "\\.csv$") %>%
   read_incites()
 
-
 # 读取高被引论文清单
-hc <- here::here("data_highcited_normal_univ") %>%
+hc <- here::here("vignettes", "data_highcited_normal_univ") %>%
   fs::dir_ls(regexp = "\\.xlsx$") %>%
   tidyESI::read_highcited()
 
 # 读取进入ESI前百分之一学科的机构清单
-top <- here::here("data_isEnter_normal_univ") %>%
+top <- here::here("vignettes", "data_isEnter_normal_univ") %>%
   fs::dir_ls(regexp = "\\.xlsx$") %>%
   tidyESI::read_top_one_percent()
 ```
 
+
+
+# 数据统计
 
 ## 科研产出
 
@@ -94,7 +103,7 @@ dt %>%
   
   head(10) %>%  
   knitr::kable(
-     caption = "我校各学科发展情况",
+     caption = "师范院校发展情况",
      booktabs = TRUE
   ) %>%
   kableExtra::kable_styling(latex_options = "hold_position") 
@@ -112,6 +121,7 @@ dt %>%
   
   ggplot(aes(x = n_paper, y = reorder(univ_cn, n_paper))) +
   geom_col(fill = "#bc5090") +
+  geom_text(aes(label = n_paper), size = 2, hjust = 1, color = "white") +
   labs(x=NULL, y =NULL, 
        title = "师范类高校科研产出",
        subtitle = '（数据来源 ESI）') 
@@ -209,7 +219,6 @@ d1 %>%
 
 ## 学科发展态势
 
-
 ```{r}
 univ_discip_cum_last_ten_year <- dt %>% 
   dplyr::filter(between(year, 2010, 2020)) %>% # last ten year
@@ -226,6 +235,9 @@ univ_discip_cum_last_ten_year <- dt %>%
 
 #univ_discip_cum_last_ten_year
 ```
+
+
+
 
 ```{r}
 focus_discipline <- c("工程学")
