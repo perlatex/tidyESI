@@ -1,6 +1,7 @@
 #' @title add high-cited information for ESI discipline
 #'
-#' @param df  data.frame
+#' @param .data  data.frame
+#' @param univ  a column containing the university name
 #' @param discipline  a column containing the character vector of 22 ESI disciplines
 #' @param source  a data.frame imported by `read_highcited()`
 #' @param scope   can be one of `last year`, `all year` and `each year`
@@ -9,22 +10,38 @@
 #' @export
 #'
 #' @examples
-#' df %>% add_high_cited(x, source = hc, scope = "last year")
-#' df %>% add_high_cited(x, source = hc, scope = "each year")
-#' df %>% add_high_cited(x, source = hc, scope = "all year")
-add_high_cited <- function(df,
+#' df %>% add_high_cited(univ, discipline, source = hc, scope = "last year")
+#' df %>% add_high_cited(univ, discipline, source = hc, scope = "each year")
+#' df %>% add_high_cited(univ, discipline, source = hc, scope = "all year")
+add_high_cited <- function(.data,
+                           univ,
                            discipline,
                            source = NULL,
                            scope = "each year") {
   library(dplyr)
   library(rlang)
 
-  if(!is.data.frame(source))
-    stop("Wrong Arguments 'source', please specify a data.frame imported by `read_highcited()`")
+  # if (!all(c("univ", "discipline") %in% colnames(.data))) {
+  #   stop_glue(
+  #     "`.data` at least need two variables: univ, discipline"
+  #   )
+  # }
 
+  if(!is.data.frame(source)){
+    stop_glue(
+      "Wrong Arguments 'source', please specify a data.frame imported by `read_highcited()`"
+      )
+  }
 
+  if (!check_title_attrs(source)) {
+    stop_glue(
+      "please specify 'source' imported by `read_highcited()`"
+    )
+  }
 
-  join_var <- as_name(enquo(discipline))
+  univ_var <- as_name(enquo(univ))
+  disc_var <- as_name(enquo(discipline))
+
   raw_highcited_timeserial <- source %>%
     dplyr::mutate(univ = stringr::str_to_title(univ))
 
@@ -36,8 +53,8 @@ add_high_cited <- function(df,
         n_cited_high = sum(times_cited),
         .groups = "drop"
       ) %>%
-      filter(year == max(year)) %>%
-      select(-year)
+      dplyr::filter(year == max(year)) %>%
+      dplyr::rename(year_range = year)
   } else if (scope == "each year") {
     subset <- raw_highcited_timeserial %>%
       dplyr::group_by(univ, discipline, year) %>%
@@ -45,11 +62,13 @@ add_high_cited <- function(df,
         n_paper_high = n(),
         n_cited_high = sum(times_cited),
         .groups = "drop"
-      )
+      ) %>%
+      dplyr::rename(year_range = year)
   } else if (scope == "all year") {
     subset <- raw_highcited_timeserial %>%
       dplyr::group_by(univ, discipline) %>%
       dplyr::summarise(
+        year_range = custom_range(year),
         n_paper_high = n(),
         n_cited_high = sum(times_cited),
         .groups = "drop"
@@ -61,14 +80,32 @@ add_high_cited <- function(df,
   }
 
   subset <- subset %>%
-    dplyr::select(univ, !!join_var := discipline, everything())
+    dplyr::mutate(year_range = as.character(year_range)) %>%
+    dplyr::select(!!univ_var := univ, !!disc_var := discipline, year_range, everything())
 
-  if (scope == "each year" & "year" %in% colnames(df)) {
-      df %>%
-        dplyr::left_join(subset, by = c("univ", {{join_var}}, "year"))
-  } else {
-      df %>%
-        dplyr::left_join(subset, by = c("univ", {{join_var}}))
-  }
+
+if (!"year_range" %in% colnames(.data)) {
+  .data %>%
+    dplyr::left_join(subset, by = c({{univ_var}}, {{disc_var}}))
+} else if (scope %in% c("last year", "all year")) {
+  warning_glue("Two data.frame maybe have different year_range, Are you sure you want this?")
+  .data %>%
+    dplyr::select(-year_range) %>%
+    dplyr::left_join(subset, by = c({{univ_var}}, {{disc_var}}))
+} else {
+  .data %>%
+    dplyr::left_join(subset, by = c({{univ_var}}, {{disc_var}}, "year_range"))
+}
+
+
+  # if (scope == "each year" & "year_range" %in% colnames(.data)) {
+  #     .data %>%
+  #       dplyr::left_join(subset, by = c({{univ_var}}, {{disc_var}}, "year_range"))
+  # } else {
+  #     .data %>%
+  #       dplyr::left_join(subset, by = c({{univ_var}}, {{disc_var}}))
+  # }
 
 }
+
+

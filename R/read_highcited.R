@@ -13,6 +13,9 @@
 #'   read_highcited()
 #'
 read_highcited <- function(...) {
+
+  library(dplyr)
+
   arguments <- unlist(list(...))
   k <- length(arguments)
   D <- list()
@@ -26,14 +29,13 @@ read_highcited <- function(...) {
       dplyr::mutate(times_cited = as.numeric(times_cited)) %>%
       dplyr::rename(year = publication_date)%>%
       dplyr::mutate(
-        univ = stringr::str_split(arguments[i], "/") %>%
-          unlist() %>%
-          dplyr::last() %>%
+        univ = basename(arguments[i]) %>%
           stringr::str_extract(., ".*?(?=\\.)") %>%
           stringr::str_to_title()
       ) %>%
-      dplyr::relocate(univ)
+      dplyr::relocate(univ, discipline, year)
   }
 
-  purrr::map_dfr(D, bind_rows)
+  purrr::map_dfr(D, bind_rows) %>%
+  as_tbl_esi()
 }
