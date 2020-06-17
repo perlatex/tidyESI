@@ -4,7 +4,7 @@
 #' @param univ  a column containing the university name
 #' @param discipline  a column containing the character vector of 22 ESI disciplines
 #' @param source  a data.frame imported by `read_top_one_percent()`
-#' @param .keep  The default value is `FALSE`, only `is_enter_top_one_percent` will be added. When `.keep = TRUE`, more information will be added.
+#' @param .keep  Logical. The default value is `FALSE`, only `is_enter_top_one_percent` will be added. When `.keep = TRUE`, more information will be added.
 #'
 #' @return data.frame that adds `is_enter_top_one_percent` information for the specified discipline of university.
 #' @export

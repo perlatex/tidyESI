@@ -57,6 +57,14 @@ message_glue <- function(..., .sep = "") {
 
 
 
+#' @title obtain the range of vector
+#'
+#' @param x vector
+#'
+#' @return   if `min(x) == max(x)`, will return `range(x)[1]`, else return character `range(x)[1] - range(x)[2]`
+#' @export
+#'
+#' @examples custom_range(x)
 custom_range <- function(x) {
   rng <- range(x)
 

@@ -66,9 +66,10 @@ add_high_cited <- function(.data,
       dplyr::rename(year_range = year)
   } else if (scope == "all year") {
     subset <- raw_highcited_timeserial %>%
+      dplyr::mutate(year_range = custom_range(year)) %>%
       dplyr::group_by(univ, discipline) %>%
       dplyr::summarise(
-        year_range = custom_range(year),
+        year_range = unique(year_range),
         n_paper_high = n(),
         n_cited_high = sum(times_cited),
         .groups = "drop"

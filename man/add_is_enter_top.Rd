@@ -15,7 +15,7 @@ add_is_enter_top(df, univ, discipline, source = NULL, .keep = FALSE)
 
 \item{source}{a data.frame imported by \code{read_top_one_percent()}}
 
-\item{.keep}{The default value is \code{FALSE}, only \code{is_enter_top_one_percent} will be added. When \code{.keep = TRUE}, more information will be added.}
+\item{.keep}{Logical. The default value is \code{FALSE}, only \code{is_enter_top_one_percent} will be added. When \code{.keep = TRUE}, more information will be added.}
 }
 \value{
 data.frame that adds \code{is_enter_top_one_percent} information for the specified discipline of university.
