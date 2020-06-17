@@ -132,7 +132,7 @@ dt %>%
 
 ```{r}
 univ_discip_timeserial_2010_to_2019 <- dt %>% 
-  dplyr::filter(between(year, 2010, 2019))  %>% 
+  dplyr::filter(between(year_range, 2010, 2019))  %>% 
   tidyESI::add_univ_name_cn(univ) %>% 
   tidyESI::add_discipline_cn(discipline)
 ```
@@ -155,7 +155,7 @@ highlight_school <- c("北京师范大学", "四川师范大学")
 d1 <- d %>%
   dplyr::group_by(univ_cn) %>%
   dplyr::mutate(
-    end_label = ifelse(year == max(year), univ_cn, NA_character_)
+    end_label = ifelse(year_range == max(year_range), univ_cn, NA_character_)
   ) %>%
   dplyr::mutate(
     end_label = case_when(
@@ -179,10 +179,10 @@ d1 %>%
 	dplyr::mutate(univ_cn = factor(univ_cn) %>% 
 		   	       forcats::fct_relevel("北京师范大学", "四川师范大学", after = Inf)
 		   ) %>% 
-	dplyr::mutate(year = as.numeric(year) ) %>%
+	dplyr::mutate(year_range = as.numeric(year_range) ) %>%
 
   ggplot(aes(
-    x = year, y = n_paper,
+    x = year_range, y = n_paper,
     color = color_group, label = end_label,
     group = univ_cn
   )) +
@@ -221,7 +221,7 @@ d1 %>%
 
 ```{r}
 univ_discip_cum_last_ten_year <- dt %>% 
-  dplyr::filter(between(year, 2010, 2020)) %>% # last ten year
+  dplyr::filter(between(year_range, 2010, 2020)) %>% # last ten year
 	dplyr::group_by(univ, discipline) %>%
 	dplyr::summarise(
 		cum_paper = sum(n_paper),
@@ -333,16 +333,18 @@ dt1 %>%
 
 ```{r}
 dt  %>% 
-  dplyr::filter(between(year, 2010, 2020)) %>% 
+  dplyr::filter(between(year_range, 2010, 2020)) %>% 
   dplyr::group_by(univ, discipline) %>% 
   dplyr::summarise(
     across(starts_with("n_"), sum, na.rm = T)
   ) %>% 
   dplyr::ungroup() %>% 
-  tidyESI::add_high_cited(discipline, 
-                   source = hc, 
-                   scope = "all year"
-                   ) %>% 
+  tidyESI::add_high_cited(
+    univ,
+    discipline, 
+    source = hc, 
+    scope = "all year"
+  ) %>% 
   tidyESI::add_esi_threshold(discipline = discipline, date = "last") %>% 
   tidyESI::add_univ_name_cn(univ) %>% 
   tidyESI::add_discipline_cn(discipline) %>% 
@@ -353,8 +355,8 @@ dt  %>%
   head(10) %>%  
   
   knitr::kable(
-     caption = "靠高被引撑起的学科",
-     booktabs = TRUE
+    caption = "靠高被引撑起的学科",
+    booktabs = TRUE
   ) %>%
   kableExtra::kable_styling(latex_options = "hold_position") 
 ```
