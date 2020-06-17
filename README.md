@@ -3,7 +3,7 @@
 
 <!-- badges: start -->
 <!-- badges: end -->
-ESI[(Essential Science Indicators)](https://esi.clarivate.com/) is widely used in the evaluation of scientific research competitiveness. The goal of `tidyESI` is to make discipline statistics more easy and more tidyverse.
+ESI [(Essential Science Indicators)](https://esi.clarivate.com/) is widely used in the evaluation of scientific research competitiveness. The goal of `tidyESI` is to make discipline statistics more easy and more tidyverse.
 
 ## Installation
 
@@ -51,43 +51,15 @@ sicnu
 ```
 
 
-
-
 ``` r
-dt %>% add_high_cited(x, source = sicnu, scope = "last year")
-dt %>% add_high_cited(x, source = sicnu, scope = "all year")
-
-esi_discipline %>% 
-     add_high_cited(discipline, 
-                    source = sicnu, 
-                    scope = "last year"
-                    )
-                    
-esi_discipline %>% 
-    add_high_cited(discipline, 
-                   source = sicnu, 
-                   scope = "all year"
-                   )
+df <- tibble(
+  u = "Sichuan Normal University",
+  d = c("Chemistry")
+)
 ```
 
 
 ``` r
-df <- tibble(
-        x = c("Chemistry")
-       )
-
-df %>% 
-   add_high_cited(x, source = sicnu, scope = "each year")
-```
-
-
-``` r
-df <- tibble(
-        x = c("Chemistry"), 
-        year = c(2010:2020)
-      )
-
-df %>% 
-   mutate(year = as.character(year)) %>% 
-   add_high_cited(x, source = sicnu, scope = "each year")
+df %>%
+  add_high_cited(u, d, source = sicnu, scope = "all year")
 ```
