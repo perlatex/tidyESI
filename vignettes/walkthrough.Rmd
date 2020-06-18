@@ -332,6 +332,41 @@ dt1 %>%
 ## 高被引论文 
 
 ```{r}
+dt %>% 
+  dplyr::filter(univ == "Sichuan Normal University") %>% 
+  dplyr::filter(between(year_range, 2010, 2020)) %>% # last ten year
+  tidyESI::add_high_cited(univ, discipline, 
+                          source = hc,
+                          scope = "each year") %>% 
+  dplyr::group_by(year_range) %>% 
+  dplyr::summarise(
+    across(starts_with("n_"), sum, na.rm = T)
+  )
+```
+
+```{r}
+dt %>% 
+  dplyr::filter(univ == "Sichuan Normal University") %>% 
+  dplyr::filter(between(year_range, 2010, 2020)) %>% # last ten year
+  dplyr::group_by(univ, discipline) %>% 
+  dplyr::summarise(
+    across(starts_with("n_"), sum, na.rm = T)
+  ) %>% 
+  tidyESI::add_high_cited(univ, discipline, 
+                          source = hc,
+                          scope = "all year") %>% 
+  tidyESI::add_esi_threshold(discipline, date = "last") %>% 
+  dplyr::arrange(desc(n_cited_high))
+```
+
+```{r}
+%>% 
+  tidyESI::add_is_enter_top(univ, discipline, souce)
+```
+
+
+
+```{r}
 dt  %>% 
   dplyr::filter(between(year_range, 2010, 2020)) %>% 
   dplyr::group_by(univ, discipline) %>% 
