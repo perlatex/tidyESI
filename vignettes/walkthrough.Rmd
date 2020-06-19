@@ -359,10 +359,7 @@ dt %>%
   dplyr::arrange(desc(n_cited_high))
 ```
 
-```{r}
-%>% 
-  tidyESI::add_is_enter_top(univ, discipline, souce)
-```
+
 
 
 
@@ -395,4 +392,108 @@ dt  %>%
   ) %>%
   kableExtra::kable_styling(latex_options = "hold_position") 
 ```
+
+
+# 学院对各学科被引频次的贡献比
+```{r}
+tbl <- here::here("data_wos") %>%
+  fs::dir_ls(regexp = "\\.txt$", recurse = TRUE) %>%
+  tidyESI::read_wos()
+
+t <- tbl %>% 
+  dplyr::filter(univ == "Sichuan Normal University") %>% 
+  dplyr::select(C1, TC, SN) %>% 
+  dplyr::mutate(discipline = tidyESI::map_issn_to_esi_discipline(SN)) %>% 
+  rowwise() %>% 
+  dplyr::mutate(coll = stringr::str_extract_all(C1, "Sichuan Normal Univ,\\s+([^,]*),") 
+  ) %>% 
+  tidyr::unnest(coll) %>% 
+  dplyr::ungroup()
+```
+
+
+```{r}
+sicnu_contribution_by_college <- t %>% 
+  dplyr::select(discipline, TC, coll) %>% 
+  dplyr::mutate(
+    across(coll, stringr::str_squish)
+  ) %>%
+  dplyr::mutate(coll_name_cn = tidyESI::map_addr_to_college_name(coll)) %>% 
+  dplyr::filter(!is.na(coll_name_cn), !is.na(discipline)) %>% 
+  dplyr::group_by(discipline, coll_name_cn) %>% 
+  dplyr::summarise(
+    n_paper = n(),
+    n_cited = sum(TC),
+    .groups = "drop"
+  ) %>% 
+  dplyr::arrange(-n_cited)  %>% 
+  tidyESI::add_discipline_cn(discipline) %>% 
+  dplyr::relocate(discipline_cn)
+sicnu_contribution_by_college
+```
+
+### 学院对学科的贡献
+
+```{r}
+d_contri <- 
+	sicnu_contribution_by_college %>% 
+	dplyr::select(discipline_cn, coll_name_cn, n_paper, n_cited) %>% 
+
+	dplyr::group_by(discipline_cn) %>% 
+  dplyr::arrange(discipline_cn, -n_cited) %>% 
+	dplyr::mutate(
+	  across(c(n_paper, n_cited), ~scales::percent(./sum(.), accuracy = 0.01), 
+	  	   .names = "{col}_percent")
+	  ) %>% 
+	dplyr::relocate(n_paper_percent, .after = "n_paper")
+d_contri
+```
+
+
+
+## 学院在学科的分配
+```{r}
+sicnu_contribution_by_college %>% 
+	dplyr::select(discipline_cn, coll_name_cn, n_paper, n_cited) %>% 
+
+	dplyr::group_by(coll_name_cn) %>% 
+  dplyr::arrange(coll_name_cn, -n_cited) %>% 
+	dplyr::mutate(
+	  across(c(n_paper, n_cited), ~scales::percent(./sum(.), accuracy = 0.01), 
+	  	   .names = "{col}_percent")
+	  ) %>% 
+  dplyr::relocate(coll_name_cn) %>% 
+	dplyr::relocate(n_paper_percent, .after = "n_paper") #%>% 
+  #write.csv("d22.csv")
+```
+
+
+
+
+# ESI学科认定的期刊
+```{r}
+pick_discipline <- c("Engineering", "Computer Science", "Chemistry")
+colnames(tidyESI::esi_jcr_list)
+```
+
+
+```{r}
+tidyESI::esi_jcr_list %>% 
+  janitor::clean_names() %>% 
+  dplyr::mutate(
+    across(category_name, stringr::str_to_title)
+  ) %>% 
+  dplyr::filter(category_name %in% pick_discipline) %>% 
+  dplyr::select(category_name, full_title, issn) %>% 
+  dplyr::arrange(category_name) %>% 
+  
+  
+  dplyr::group_by(category_name, .drop = FALSE) %>%
+  dplyr::group_walk(
+    ~readr::write_excel_csv(.x, path = glue::glue("{.y}.xlsx"))
+   )
+
+```
+
+- 个人服从学院 学院服从学科 学科服从学校
 
