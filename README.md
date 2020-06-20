@@ -14,7 +14,7 @@ devtools::install_github("perlatex/tidyESI")
 ```
 ## How to use
 
-[There](https://github.com/perlatex/tidyESI/tree/master/vignettes) are manuals and documents here, but only Chinese at present.
+There are [manuals](https://github.com/perlatex/tidyESI/tree/master/vignettes) and [documents](https://github.com/perlatex/use_tidyESI) here, but only Chinese at present.
 
 ## Example
 
