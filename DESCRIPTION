@@ -23,7 +23,8 @@ Imports:
     fs,
     stringr,
     tibble,
-    readxl
+    readxl,
+    tidyr
 Suggests: 
     testthat
 Depends: 
